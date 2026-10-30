@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Coleção de Chamados:
+    // - Criação pública: qualquer colaborador pode abrir chamado sem login preenchendo os dados
+    // - Leitura, atualização (mudar status, etc.) e exclusão restritas à equipe autenticada
+    match /chamados/{chamadoId} {
+      allow create: if request.resource.data.solicitanteNome is string
+                    && request.resource.data.solicitanteNome.size() > 0
+                    && request.resource.data.setor is string
+                    && request.resource.data.prioridade in ['urgente', 'importante', 'rotina']
+                    && request.resource.data.salaNome is string
+                    && request.resource.data.salaNome.size() > 0
+                    && request.resource.data.descricao is string
+                    && request.resource.data.descricao.size() > 0
+                    && request.resource.data.status in ['pendente', 'em_andamento', 'concluido', 'cancelado'];
+      
+      allow read, update, delete: if request.auth != null;
+    }
+  }
+}

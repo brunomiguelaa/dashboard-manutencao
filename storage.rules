@@ -1,0 +1,18 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Pasta de imagens dos chamados
+    match /chamados/{allPaths=**} {
+      // Permite upload público desde que seja imagem e menor que 5MB (proteção de cota Spark)
+      allow create: if request.resource.size < 5 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*');
+      
+      // Leitura permitida para download/exibição
+      allow read: if true;
+      
+      // Exclusão apenas para administradores autenticados
+      allow delete: if request.auth != null;
+    }
+  }
+}

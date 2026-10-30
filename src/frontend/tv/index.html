@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modo TV - Central de Manutenção em Tempo Real</title>
+  
+  <!-- Fontes Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../css/tv.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📺</text></svg>">
+</head>
+<body>
+
+  <!-- Top Bar da TV -->
+  <header class="tv-header">
+    <div class="tv-brand">
+      <div class="tv-logo-card">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+          <polyline points="17 2 12 7 7 2"></polyline>
+        </svg>
+      </div>
+      <div class="tv-title">
+        <h1>Central de Chamados de Manutenção</h1>
+        <p>Monitoramento Operacional em Tempo Real - Instituição Cliente</p>
+      </div>
+    </div>
+
+    <!-- Indicadores e Relógio -->
+    <div class="tv-stats-header">
+      <div class="stat-pill urgente" id="countUrgentPill">
+        0 Urgentes
+      </div>
+      <div class="stat-pill andamento" id="countAndamentoPill">
+        0 Em Andamento
+      </div>
+      <div class="stat-pill" id="countTotalPill">
+        0 Ativos
+      </div>
+
+      <div class="clock-box">
+        <div class="clock-time" id="clockTime">00:00:00</div>
+        <div class="clock-date" id="clockDate">Carregando data...</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Grid de Chamados em Tempo Real -->
+  <main class="tv-grid" id="tvGrid">
+    <!-- Inserido dinamicamente via TvView -->
+  </main>
+
+  <!-- Rodapé do Modo TV -->
+  <footer class="tv-footer">
+    <div style="display: flex; align-items: center; gap: 0.6rem;">
+      <span style="width: 8px; height: 8px; border-radius: 50%; background: #0284c7; display: inline-block;"></span>
+      <span id="connectionIndicator">Sincronizado com Firebase Firestore</span>
+    </div>
+
+    <div class="tv-footer-brand">
+      Instituição Cliente - Setor de Manutenção
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <button type="button" class="btn-fullscreen" id="btnTestSoundTv" title="Testar som do alarme na TV">
+        <span>🔔 Testar Alarme</span>
+      </button>
+
+      <button type="button" class="btn-fullscreen" id="btnFullscreen">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        </svg>
+        <span>Tela Cheia</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Controlador / Visão do Modo TV -->
+  <script type="module" src="../js/views/tvView.js"></script>
+</body>
+</html>

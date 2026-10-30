@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abertura de Chamado - Setor de Manutenção</title>
+  <meta name="description" content="Sistema de Solicitação de Chamados de Manutenção via QR Code - Instituição Cliente.">
+  
+  <!-- Fontes Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Estilos -->
+  <link rel="stylesheet" href="../css/public.css">
+  
+  <!-- Favicon SVG -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="generic-brand-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+      </div>
+      <div class="brand-badge">
+        <span>Manutenção Predial & Infraestrutura</span>
+      </div>
+      <h1>Solicitação de Manutenção</h1>
+      <p>Preencha os campos abaixo para abrir um chamado técnico para a equipe de manutenção da Instituição Cliente.</p>
+    </header>
+
+    <!-- Card do Formulário -->
+    <div class="form-card" id="formCard">
+      <form id="maintenanceForm" novalidate>
+        
+        <!-- 1. Nome do Solicitante -->
+        <div class="form-group">
+          <label for="solicitanteNome" class="form-label">
+            <span>Nome do solicitante <span class="required">*</span></span>
+          </label>
+          <input 
+            type="text" 
+            id="solicitanteNome" 
+            name="solicitanteNome" 
+            class="form-input" 
+            placeholder="Digite seu nome completo" 
+            required 
+            autocomplete="name"
+          >
+        </div>
+
+        <!-- 2. Setor da Instituição -->
+        <div class="form-group">
+          <label for="setorSelect" class="form-label">
+            <span>Setor da Instituição <span class="required">*</span></span>
+          </label>
+          <select id="setorSelect" name="setor" class="form-select" required>
+            <option value="" disabled selected>Selecione o seu setor</option>
+            <option value="Administrativo">Administrativo</option>
+            <option value="Coordenação Operacional">Coordenação Operacional</option>
+            <option value="Coordenação de Serviços">Coordenação de Serviços</option>
+            <option value="Educação e Ensino">Educação e Ensino</option>
+            <option value="Gerência e Direção">Gerência e Direção</option>
+            <option value="Infraestrutura e TI">Infraestrutura e TI</option>
+            <option value="Operações e Logística">Operações e Logística</option>
+            <option value="Setor Geral">Setor Geral</option>
+          </select>
+        </div>
+
+        <!-- 3. Aviso ao Gestor -->
+        <div class="form-group">
+          <label class="form-label">
+            <span>Já avisou o gestor imediato sobre essa demanda? <span class="required">*</span></span>
+          </label>
+          <div class="radio-group-cards gestor-options">
+            <label class="radio-option-card">
+              <input type="radio" name="avisouGestor" value="sim" required>
+              <span>👍 Sim, já avisei</span>
+            </label>
+            <label class="radio-option-card">
+              <input type="radio" name="avisouGestor" value="nao" required>
+              <span>⏳ Ainda não</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 4. Prioridade -->
+        <div class="form-group">
+          <label class="form-label">
+            <span>Nível de Gravidade / Prioridade <span class="required">*</span></span>
+          </label>
+          <div class="priority-grid">
+            <!-- Urgente -->
+            <label class="priority-card urgente">
+              <input type="radio" name="prioridade" value="urgente" required>
+              <span class="prio-icon">🚨</span>
+              <span class="prio-title">Urgente</span>
+              <span class="prio-desc">Risco ou impede o uso</span>
+            </label>
+
+            <!-- Importante -->
+            <label class="priority-card importante">
+              <input type="radio" name="prioridade" value="importante" required>
+              <span class="prio-icon">⚠️</span>
+              <span class="prio-title">Importante</span>
+              <span class="prio-desc">Prejudica atividade</span>
+            </label>
+
+            <!-- Rotina -->
+            <label class="priority-card rotina">
+              <input type="radio" name="prioridade" value="rotina" required>
+              <span class="prio-icon">🔧</span>
+              <span class="prio-title">Rotina</span>
+              <span class="prio-desc">Manutenção regular</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 5. Identificação da Sala / Local -->
+        <div class="form-group">
+          <label for="salaInput" class="form-label">
+            <span>Sala ou Local do Problema <span class="required">*</span></span>
+          </label>
+          <input 
+            type="text" 
+            id="salaInput" 
+            name="salaInput" 
+            class="form-input" 
+            placeholder="Ex: Sala 102, Bloco B, Refeitório..." 
+            required 
+            autocomplete="off"
+          >
+        </div>
+
+        <!-- 6. Descrição -->
+        <div class="form-group">
+          <label for="descricao" class="form-label">
+            <span>Descrição do Problema <span class="required">*</span></span>
+          </label>
+          <textarea 
+            id="descricao" 
+            name="descricao" 
+            class="form-textarea" 
+            rows="3" 
+            placeholder="Descreva detalhadamente o que precisa de conserto ou ajuste..." 
+            required
+          ></textarea>
+        </div>
+
+        <!-- 7. Observações Adicionais -->
+        <div class="form-group">
+          <label for="observacoes" class="form-label">
+            <span>Observações Complementares (Opcional)</span>
+          </label>
+          <input 
+            type="text" 
+            id="observacoes" 
+            name="observacoes" 
+            class="form-input" 
+            placeholder="Ex: Disjuntor já foi desligado por precaução"
+          >
+        </div>
+
+        <!-- 8. Foto do Problema (Otimização Client-Side) -->
+        <div class="form-group">
+          <label class="form-label">
+            <span>Anexar Foto da Ocorrência (Opcional)</span>
+            <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: normal;">Compressão automática</span>
+          </label>
+
+          <!-- Inputs ocultos -->
+          <input type="file" id="fotoCameraInput" accept="image/*" capture="environment" style="display: none;">
+          <input type="file" id="fotoGalleryInput" accept="image/*" style="display: none;">
+
+          <!-- Botoes de Upload -->
+          <div class="photo-upload-container" id="photoUploadWrapper">
+            <button type="button" class="btn-upload-choice" id="btnTriggerCamera">
+              <span style="font-size: 1.5rem;">📸</span>
+              <span>Tirar Foto</span>
+            </button>
+            <button type="button" class="btn-upload-choice" id="btnTriggerGallery">
+              <span style="font-size: 1.5rem;">🖼️</span>
+              <span>Galeria / Arquivo</span>
+            </button>
+          </div>
+
+          <!-- Estado de Processamento -->
+          <div id="photoProcessingState" style="display: none; align-items: center; justify-content: center; gap: 0.75rem; padding: 1.25rem; background: #f8fafc; border-radius: var(--radius-md); border: 1.5px dashed var(--primary); margin-top: 0.5rem;">
+            <div class="spinner" style="border-top-color: var(--primary);"></div>
+            <span style="font-size: 0.88rem; font-weight: 600; color: var(--primary);">Otimizando foto client-side...</span>
+          </div>
+
+          <!-- Card de Foto Anexada -->
+          <div class="photo-attached-card" id="photoAttachedCard">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <img id="previewImage" src="" alt="Foto Anexada" style="width: 56px; height: 56px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color);">
+              <div style="flex: 1; overflow: hidden;">
+                <div id="photoFilename" style="font-size: 0.85rem; font-weight: 700; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">foto.jpg</div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.2rem;">
+                  <span id="photoSizeBadge" style="background: #e0f2fe; color: #0369a1; font-size: 0.75rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 4px;">~50 KB</span>
+                  <span style="font-size: 0.75rem; color: #16a34a; font-weight: 600;">✓ Pronto</span>
+                </div>
+              </div>
+              <div style="display: flex; gap: 0.4rem;">
+                <button type="button" class="btn-secondary" id="btnChangePhoto" style="padding: 0.4rem 0.6rem; font-size: 0.8rem;" title="Trocar Foto">Trocar</button>
+                <button type="button" class="btn-secondary" id="btnRemovePhoto" style="padding: 0.4rem 0.6rem; font-size: 0.8rem; color: #dc2626;" title="Remover">✕</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botão de Envio -->
+        <button type="submit" class="btn-submit" id="btnSubmit">
+          <div class="spinner" id="submitSpinner" style="display: none;"></div>
+          <span id="submitText">Enviar Solicitação de Manutenção</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Tela de Confirmação e Sucesso -->
+    <div class="success-screen" id="successScreen">
+      <div style="width: 64px; height: 64px; background: #dcfce7; color: #16a34a; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem;">
+        Chamado Aberto com Sucesso!
+      </h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1rem;">
+        A equipe do Setor de Manutenção da Instituição Cliente já foi notificada em tempo real.
+      </p>
+
+      <div>
+        <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Protocolo de Acompanhamento:</span>
+        <div>
+          <span class="protocol-badge" id="protocolDisplay">MAN-000000-0000</span>
+        </div>
+      </div>
+
+      <button type="button" class="btn-secondary" id="btnNewRequest" style="margin-top: 1.25rem;">
+        <span>Abrir Outro Chamado</span>
+      </button>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="site-footer">
+      Instituição Cliente - Setor de Manutenção
+    </footer>
+  </div>
+
+  <!-- Modal de Advertência para Prioridade Urgente -->
+  <div class="modal-backdrop" id="modalUrgenteAlert">
+    <div class="modal-container" style="max-width: 480px; text-align: center; padding: 2rem 1.5rem;">
+      <div style="width: 60px; height: 60px; background: #fee2e2; color: #dc2626; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+        <span style="font-size: 1.8rem;">⚠️</span>
+      </div>
+
+      <h3 style="font-size: 1.3rem; font-weight: 800; color: #dc2626; margin-bottom: 0.75rem;">
+        Atenção: Prioridade Urgente
+      </h3>
+
+      <div style="background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; text-align: left; font-size: 0.9rem; color: #7f1d1d; line-height: 1.5;">
+        <strong>Critério de Classificação:</strong>
+        <p style="margin-top: 0.4rem;">
+          Esta prioridade deve ser reservada para falhas que apresentem <strong>risco iminente à segurança física</strong> ou causem a <strong>interrupção total das atividades</strong> do local.
+        </p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <button type="button" class="btn-submit" id="btnConfirmarUrgente" style="margin-top: 0; background: #dc2626; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);">
+          🚨 Confirmar Urgência (Existe Risco / Impede Uso)
+        </button>
+        <button type="button" class="btn-secondary" id="btnMudarImportante" style="justify-content: center; width: 100%;">
+          Mudar para "Importante"
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controlador / Visão do Formulário de Solicitação -->
+  <script type="module" src="../js/views/solicitarView.js"></script>
+</body>
+</html>

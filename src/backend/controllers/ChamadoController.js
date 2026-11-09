@@ -37,6 +37,14 @@ export class ChamadoController {
    * @returns {Promise<{ sucesso: boolean, protocolo: string, chamado: ChamadoModel }>}
    */
   static async criarChamado(dadosFormulario, fotoArquivo = null) {
+    // 1. Campo Local (Controller):
+    // Garante que a validação no Controller impeça o envio se este campo estiver em branco
+    const valorLocal = dadosFormulario?.local_id ?? dadosFormulario?.salaNome;
+    const salaNomeLimpo = valorLocal ? String(valorLocal).trim() : '';
+    if (!salaNomeLimpo) {
+      throw new Error('A identificação da sala ou local é obrigatória e não pode estar em branco.');
+    }
+
     let fotoBase64 = '';
     
     // Processamento otimizado de foto client-side se existir
@@ -52,7 +60,7 @@ export class ChamadoController {
       setor: dadosFormulario.setor,
       avisouGestor: dadosFormulario.avisouGestor,
       prioridade: dadosFormulario.prioridade,
-      salaNome: dadosFormulario.salaNome,
+      salaNome: salaNomeLimpo,
       descricao: dadosFormulario.descricao,
       observacoes: dadosFormulario.observacoes || '',
       fotoUrl: fotoBase64,
@@ -75,12 +83,16 @@ export class ChamadoController {
     if (isConfigured()) {
       const docRef = await addDoc(collection(db, 'chamados'), chamado.toFirestore());
       chamado.id = docRef.id;
+      console.log(`[ChamadoController] Chamado gravado com sucesso no Firestore (Protocolo: ${chamado.protocolo}, ID: ${chamado.id})`);
     } else {
       // Modo Demonstração / Fallback local seguro
       chamado.id = 'demo-' + Date.now();
       const mockList = ChamadoController._obterListaDemo();
       mockList.unshift({ id: chamado.id, ...chamado.toFirestore() });
       localStorage.setItem('demo_chamados', JSON.stringify(mockList));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('chamados_atualizados'));
+      }
     }
 
     return {
@@ -92,22 +104,38 @@ export class ChamadoController {
 
   /**
    * Escuta em tempo real os chamados ativos (pendentes e em andamento).
-   * Otimizado para cota do Spark Plan (filtra apenas status operacionais).
+   * Utiliza o listener reativo onSnapshot() do Firebase para que telas como o Painel TV
+   * reajam automaticamente sem necessidade de consultas estáticas (getDocs).
    * 
-   * @param {Function} onUpdate Callback que recebe a lista ordenada de ChamadoModel
+   * @param {Function} onUpdate Callback que recebe a lista ordenada de ChamadoModel e changes
    * @param {Function} onError Callback de erro
    * @returns {Function} Função para cancelar a subscrição (unsubscribe)
    */
   static ouvirChamadosAtivos(onUpdate, onError) {
     if (!isConfigured()) {
-      const mockList = ChamadoController._obterListaDemo()
-        .filter(c => c.status === StatusEnum.PENDENTE || c.status === StatusEnum.EM_ANDAMENTO)
-        .map(c => ChamadoModel.fromFirestore(c.id, c));
-      onUpdate(mockList);
-      return () => {};
+      const emitir = () => {
+        const mockList = ChamadoController._obterListaDemo()
+          .filter(c => c.status === StatusEnum.PENDENTE || c.status === StatusEnum.EM_ANDAMENTO)
+          .map(c => ChamadoModel.fromFirestore(c.id, c));
+        onUpdate(mockList, []);
+      };
+      emitir();
+
+      const storageHandler = () => emitir();
+      if (typeof window !== 'undefined') {
+        window.addEventListener('storage', storageHandler);
+        window.addEventListener('chamados_atualizados', storageHandler);
+      }
+      return () => {
+        if (typeof window !== 'undefined') {
+          window.removeEventListener('storage', storageHandler);
+          window.removeEventListener('chamados_atualizados', storageHandler);
+        }
+      };
     }
 
     const chamadosRef = collection(db, 'chamados');
+    // Consulta reativa em tempo real com onSnapshot() (substituindo qualquer consulta estática getDocs)
     const q = query(
       chamadosRef,
       where('status', 'in', [StatusEnum.PENDENTE, StatusEnum.EM_ANDAMENTO])
@@ -132,7 +160,10 @@ export class ChamadoController {
       });
 
       onUpdate(chamados, snapshot.docChanges());
-    }, onError);
+    }, (erro) => {
+      console.error('[ChamadoController] Erro no listener onSnapshot() de chamados ativos:', erro);
+      if (typeof onError === 'function') onError(erro);
+    });
   }
 
   /**
@@ -193,6 +224,9 @@ export class ChamadoController {
       if (item) {
         Object.assign(item, updatePayload);
         localStorage.setItem('demo_chamados', JSON.stringify(mockList));
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('chamados_atualizados'));
+        }
       }
     }
 
@@ -243,6 +277,9 @@ export class ChamadoController {
       let mockList = ChamadoController._obterListaDemo();
       mockList = mockList.filter(c => c.id !== chamado.id);
       localStorage.setItem('demo_chamados', JSON.stringify(mockList));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('chamados_atualizados'));
+      }
     }
 
     return true;

@@ -37,6 +37,12 @@
 
     <!-- Card do Formulário -->
     <div class="form-card" id="formCard">
+      <!-- Div de Notificação / Feedback Visual Amigável de Sucesso -->
+      <div id="feedbackAberturaBox" class="feedback-banner" style="display: none; background: #dcfce7; border: 1.5px solid #86efac; color: #15803d; border-radius: var(--radius-md); padding: 0.9rem 1.25rem; margin-bottom: 1.5rem; font-weight: 600; text-align: center; box-shadow: var(--shadow-sm);" role="status">
+        <span style="font-size: 1.2rem; margin-right: 0.4rem;">🎉</span>
+        <span id="feedbackAberturaTexto">Chamado aberto com sucesso!</span>
+      </div>
+
       <form id="maintenanceForm" novalidate>
         
         <!-- 1. Nome do Solicitante -->
@@ -122,18 +128,18 @@
           </div>
         </div>
 
-        <!-- 5. Identificação da Sala / Local -->
+        <!-- 5. Identificação da Sala / Local (Campo de Texto Livre) -->
         <div class="form-group">
-          <label for="salaInput" class="form-label">
+          <label for="local_id" class="form-label">
             <span>Sala ou Local do Problema <span class="required">*</span></span>
           </label>
           <input 
             type="text" 
-            id="salaInput" 
-            name="salaInput" 
+            id="local_id" 
+            name="local_id" 
             class="form-input" 
-            placeholder="Ex: Sala 102, Bloco B, Refeitório..." 
             required 
+            placeholder="Digite a sala ou local"
             autocomplete="off"
           >
         </div>
@@ -167,48 +173,75 @@
           >
         </div>
 
-        <!-- 8. Foto do Problema (Otimização Client-Side) -->
+        <!-- 8. Área de Anexos e Câmera -->
         <div class="form-group">
           <label class="form-label">
-            <span>Anexar Foto da Ocorrência (Opcional)</span>
+            <span>Anexo e Registro Visual (Opcional)</span>
             <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: normal;">Compressão automática</span>
           </label>
 
-          <!-- Inputs ocultos -->
-          <input type="file" id="fotoCameraInput" accept="image/*" capture="environment" style="display: none;">
-          <input type="file" id="fotoGalleryInput" accept="image/*" style="display: none;">
+          <!-- Banner amigável de erro de permissão da câmera -->
+          <div id="cameraPermissionError" class="camera-error-banner" style="display: none; background: var(--urgente-bg); border: 1.5px solid var(--urgente-border); color: var(--urgente-color); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 0.75rem; font-size: 0.88rem; line-height: 1.45;" role="alert">
+            <div style="font-weight: 700; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+              <span>⚠️</span>
+              <span>Acesso à Câmera Bloqueado</span>
+            </div>
+            <p style="margin: 0; color: #991b1b; font-size: 0.85rem;">
+              O acesso à câmera foi bloqueado ou não autorizado pelo navegador. Para tirar fotos ou ler QR Code, por favor libere a permissão de câmera nas configurações do seu navegador e clique novamente em "Abrir Câmera".
+            </p>
+          </div>
 
-          <!-- Botoes de Upload -->
-          <div class="photo-upload-container" id="photoUploadWrapper">
-            <button type="button" class="btn-upload-choice" id="btnTriggerCamera">
-              <span style="font-size: 1.5rem;">📸</span>
-              <span>Tirar Foto</span>
-            </button>
-            <button type="button" class="btn-upload-choice" id="btnTriggerGallery">
-              <span style="font-size: 1.5rem;">🖼️</span>
-              <span>Galeria / Arquivo</span>
+          <!-- Container de Vídeo ao Vivo (Câmera Ativa) -->
+          <div id="cameraContainer" style="display: none; background: #0f172a; border-radius: var(--radius-md); padding: 1rem; margin-bottom: 0.75rem; text-align: center; color: #ffffff;">
+            <video id="cameraVideo" playsinline autoplay style="width: 100%; max-height: 260px; border-radius: var(--radius-sm); object-fit: cover; background: #000;"></video>
+            <canvas id="cameraCanvas" style="display: none;"></canvas>
+            <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 0.75rem; flex-wrap: wrap;">
+              <button type="button" class="btn-action-qr" id="btnCapturarFoto" style="background: var(--primary); color: #ffffff; border-color: var(--primary); padding: 0.5rem 1rem;">
+                📸 Capturar Foto
+              </button>
+              <button type="button" class="btn-secondary" id="btnFecharCamera" style="padding: 0.5rem 1rem;">
+                ✕ Fechar Câmera
+              </button>
+            </div>
+          </div>
+
+          <!-- As Duas Opções Claras: Anexar Documento / Abrir Câmera -->
+          <div class="photo-upload-container" id="photoUploadWrapper" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <!-- Opção 1: Input de arquivo para "Anexar Documento" (abrir galeria/arquivos) -->
+            <label class="btn-upload-choice" for="inputAnexoDocumento" style="flex: 1; min-width: 140px; cursor: pointer; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem 1rem; border: 1.5px dashed var(--border); border-radius: var(--radius-md); background: #ffffff; transition: all 0.2s;">
+              <span style="font-size: 1.6rem; margin-bottom: 0.25rem;">📁</span>
+              <span style="font-weight: 700; color: var(--text-main); font-size: 0.92rem;">Anexar Documento</span>
+              <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Galeria ou arquivos</span>
+              <input type="file" id="inputAnexoDocumento" accept="image/*,application/pdf" style="display: none;">
+            </label>
+
+            <!-- Opção 2: Botão específico para "Abrir Câmera" (tirar foto ou QR Code) -->
+            <button type="button" class="btn-upload-choice" id="btnAbrirCamera" style="flex: 1; min-width: 140px; cursor: pointer; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem 1rem; border: 1.5px dashed var(--border); border-radius: var(--radius-md); background: #ffffff; transition: all 0.2s;">
+              <span style="font-size: 1.6rem; margin-bottom: 0.25rem;">📷</span>
+              <span style="font-weight: 700; color: var(--text-main); font-size: 0.92rem;">Abrir Câmera</span>
+              <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Tirar foto ou QR Code</span>
             </button>
           </div>
 
-          <!-- Estado de Processamento -->
+          <!-- Estado de Processamento e Compressão -->
           <div id="photoProcessingState" style="display: none; align-items: center; justify-content: center; gap: 0.75rem; padding: 1.25rem; background: #f8fafc; border-radius: var(--radius-md); border: 1.5px dashed var(--primary); margin-top: 0.5rem;">
             <div class="spinner" style="border-top-color: var(--primary);"></div>
-            <span style="font-size: 0.88rem; font-weight: 600; color: var(--primary);">Otimizando foto client-side...</span>
+            <span style="font-size: 0.88rem; font-weight: 600; color: var(--primary);">Otimizando arquivo anexo...</span>
           </div>
 
-          <!-- Card de Foto Anexada -->
-          <div class="photo-attached-card" id="photoAttachedCard">
+          <!-- Card de Arquivo / Foto Anexada -->
+          <div class="photo-attached-card" id="photoAttachedCard" style="display: none; margin-top: 0.5rem;">
             <div style="display: flex; align-items: center; gap: 1rem;">
-              <img id="previewImage" src="" alt="Foto Anexada" style="width: 56px; height: 56px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color);">
+              <img id="previewImage" src="" alt="Anexo" style="width: 56px; height: 56px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border);">
               <div style="flex: 1; overflow: hidden;">
-                <div id="photoFilename" style="font-size: 0.85rem; font-weight: 700; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">foto.jpg</div>
+                <div id="photoFilename" style="font-size: 0.85rem; font-weight: 700; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">anexo.jpg</div>
                 <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.2rem;">
                   <span id="photoSizeBadge" style="background: #e0f2fe; color: #0369a1; font-size: 0.75rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 4px;">~50 KB</span>
                   <span style="font-size: 0.75rem; color: #16a34a; font-weight: 600;">✓ Pronto</span>
                 </div>
               </div>
               <div style="display: flex; gap: 0.4rem;">
-                <button type="button" class="btn-secondary" id="btnChangePhoto" style="padding: 0.4rem 0.6rem; font-size: 0.8rem;" title="Trocar Foto">Trocar</button>
+                <button type="button" class="btn-secondary" id="btnChangePhoto" style="padding: 0.4rem 0.6rem; font-size: 0.8rem;" title="Trocar Anexo">Trocar</button>
                 <button type="button" class="btn-secondary" id="btnRemovePhoto" style="padding: 0.4rem 0.6rem; font-size: 0.8rem; color: #dc2626;" title="Remover">✕</button>
               </div>
             </div>

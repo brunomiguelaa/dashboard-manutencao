@@ -72,6 +72,20 @@ body {
   min-height: 100vh;
 }
 
+/* Backdrop para Drawer Mobile (Off-canvas) */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
 /* Sidebar */
 .sidebar {
   width: 260px;
@@ -87,7 +101,7 @@ body {
   padding: 1.25rem 1rem;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -103,6 +117,27 @@ body {
   color: var(--text-main);
   font-weight: 700;
   font-size: 0.95rem;
+}
+
+.btn-close-sidebar {
+  display: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #ffffff;
+  border-radius: var(--radius-sm);
+  width: 32px;
+  height: 32px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-close-sidebar:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
 }
 
 .sidebar-nav {
@@ -214,6 +249,34 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.btn-hamburger {
+  display: none;
+  background: #ffffff;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  cursor: pointer;
+  padding: 0.45rem;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-hamburger:hover {
+  background: var(--bg-muted);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .topbar-title h1 {
@@ -574,3 +637,262 @@ body {
   font-weight: 700;
   padding: 1.5rem 0 1rem;
 }
+
+/* ==========================================================================
+   Responsividade Mobile (max-width: 768px):
+   1. Sidebar Off-canvas / Drawer oculta por padrão.
+   2. Conteúdo Principal 100% de largura (w-full).
+   3. Botão Hamburger visível na Topbar.
+   4. Cards de Métricas ('Total Finalizados', etc.) e Filtros a 100%.
+   5. Tabela de Chamados em formato de Cards (estilo Trello).
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Layout Base 100% no Mobile */
+  .app-container {
+    flex-direction: column;
+    width: 100%;
+    min-width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* 1. Comportamento da Sidebar no Mobile: Off-canvas / Drawer */
+  .sidebar-backdrop {
+    display: block;
+  }
+
+  .sidebar-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    max-width: 85vw;
+    height: 100vh;
+    height: 100dvh;
+    z-index: 999;
+    background: var(--sidebar-bg);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  /* Estado Aberto do Drawer */
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.35), 0 10px 10px -5px rgba(0, 0, 0, 0.25);
+  }
+
+  .sidebar-header {
+    padding: 1.15rem 1rem;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-close-sidebar {
+    display: inline-flex;
+  }
+
+  .sidebar-nav {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    overflow-x: visible;
+    padding: 1.25rem 1rem;
+    gap: 0.4rem;
+  }
+
+  /* 3. Botão de Menu (Hamburger) visível no Mobile */
+  .btn-hamburger {
+    display: inline-flex;
+  }
+
+  /* Topbar no Mobile */
+  .topbar {
+    padding: 0.85rem 1rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    gap: 0.5rem;
+  }
+
+  .topbar-left {
+    gap: 0.65rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .topbar-title h1 {
+    font-size: 1.15rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .topbar-actions {
+    gap: 0.4rem;
+    flex-shrink: 0;
+  }
+
+  .btn-tv-mode,
+  .btn-action-qr {
+    padding: 0.45rem 0.65rem;
+    font-size: 0.8rem;
+  }
+
+  /* 2. Largura do Conteúdo: Ocupa 100% da largura da tela */
+  .main-wrapper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    flex: 1;
+    overflow-x: hidden;
+  }
+
+  .content-body {
+    padding: 1rem 0.85rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  /* Cards de Métricas ('Total Finalizados', etc.): 100% de largura */
+  .metrics-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    width: 100%;
+    margin-bottom: 1.25rem;
+  }
+
+  .metric-card {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1.1rem 1.15rem;
+  }
+
+  /* Barra de Filtros: 100% de largura */
+  .filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 0.65rem;
+    padding: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .search-box {
+    width: 100%;
+    min-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .filter-select {
+    width: 100%;
+    min-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .table-card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .table-responsive {
+    overflow-x: visible;
+    width: 100%;
+  }
+
+  /* 5. Tabela de Histórico de Chamados - Estilo Trello */
+  .admin-table,
+  .admin-table thead,
+  .admin-table tbody,
+  .admin-table th,
+  .admin-table td,
+  .admin-table tr {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .admin-table thead {
+    display: none;
+  }
+
+  .admin-table tbody tr {
+    background: #ffffff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: 1.15rem;
+    padding: 1.15rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+
+  .admin-table tbody tr:hover {
+    background: #ffffff;
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px -2px rgba(0, 0, 0, 0.08);
+  }
+
+  .admin-table td {
+    display: block;
+    padding: 0.5rem 0;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: left;
+    white-space: normal !important;
+  }
+
+  .admin-table td[data-label]::before {
+    content: attr(data-label) ": ";
+    font-weight: 700;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    display: inline-block;
+    margin-right: 0.4rem;
+    letter-spacing: 0.03em;
+  }
+
+  .admin-table td[data-label="Ações"]::before {
+    display: none;
+  }
+
+  .admin-table td:last-child {
+    border-bottom: none;
+    padding-top: 0.85rem;
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .admin-table td:last-child button {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-tv-mode .btn-text,
+  .btn-action-qr .btn-text {
+    display: none;
+  }
+}
+

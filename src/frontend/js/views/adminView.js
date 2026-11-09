@@ -21,6 +21,12 @@ const loadingScreen = document.getElementById('loadingScreen');
 const userEmailEl = document.getElementById('userEmail');
 const btnLogout = document.getElementById('btnLogout');
 
+// Sidebar Drawer Mobile
+const adminSidebar = document.getElementById('adminSidebar');
+const btnToggleSidebar = document.getElementById('btnToggleSidebar');
+const btnCloseSidebar = document.getElementById('btnCloseSidebar');
+const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
 // Navegação entre Abas
 const navChamados = document.getElementById('navChamados');
 const navChamadosConcluidos = document.getElementById('navChamadosConcluidos');
@@ -104,6 +110,7 @@ let abaAtiva = 'chamados';
 
 document.addEventListener('DOMContentLoaded', () => {
   inicializarAutenticacao();
+  inicializarSidebarMobile();
   inicializarNavegacao();
   inicializarFiltros();
   inicializarEventosModal();
@@ -158,6 +165,57 @@ function inicializarNavegacao() {
   navChamadosConcluidos?.addEventListener('click', () => mudarAba('concluidos'));
   navQrCode?.addEventListener('click', () => mudarAba('qrcode'));
   btnTopbarQr?.addEventListener('click', () => mudarAba('qrcode'));
+}
+
+function inicializarSidebarMobile() {
+  const abrirSidebar = () => {
+    adminSidebar?.classList.add('open');
+    sidebarBackdrop?.classList.add('active');
+    btnToggleSidebar?.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const fecharSidebar = () => {
+    adminSidebar?.classList.remove('open');
+    sidebarBackdrop?.classList.remove('active');
+    btnToggleSidebar?.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  };
+
+  btnToggleSidebar?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (adminSidebar?.classList.contains('open')) {
+      fecharSidebar();
+    } else {
+      abrirSidebar();
+    }
+  });
+
+  btnCloseSidebar?.addEventListener('click', fecharSidebar);
+  sidebarBackdrop?.addEventListener('click', fecharSidebar);
+
+  // Fecha com a tecla Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && adminSidebar?.classList.contains('open')) {
+      fecharSidebar();
+    }
+  });
+
+  // Fecha automaticamente ao mudar de aba no mobile
+  [navChamados, navChamadosConcluidos, navQrCode].forEach(btn => {
+    btn?.addEventListener('click', () => {
+      if (window.innerWidth <= 768) {
+        fecharSidebar();
+      }
+    });
+  });
+
+  // Fecha o drawer caso a janela seja redimensionada para desktop
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      fecharSidebar();
+    }
+  });
 }
 
 function mudarAba(nomeAba) {
@@ -258,29 +316,29 @@ function renderizarTabelaAtivos() {
   filtrados.forEach(c => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td style="font-family: monospace; font-weight: 700; color: var(--text-muted);">${c.protocolo || '-'}</td>
-      <td>
+      <td data-label="Protocolo" style="font-family: monospace; font-weight: 700; color: var(--text-muted);">${c.protocolo || '-'}</td>
+      <td data-label="Status">
         <span class="badge badge-${c.status}">
           ${c.status === 'em_andamento' ? 'Em Andamento' : 'Pendente'}
         </span>
       </td>
-      <td>
+      <td data-label="Prioridade">
         <span class="badge badge-${c.prioridade}">
           ${c.prioridade.toUpperCase()}
         </span>
       </td>
-      <td>
+      <td data-label="Local & Descrição">
         <strong>${escapeHtml(c.salaNome || 'Local não informado')}</strong>
         <div style="font-size: 0.82rem; color: var(--text-muted); max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
           ${escapeHtml(c.descricao)}
         </div>
       </td>
-      <td>
+      <td data-label="Solicitante / Setor">
         <div>${escapeHtml(c.solicitanteNome)}</div>
         <div style="font-size: 0.78rem; color: var(--text-muted);">${escapeHtml(c.setor)}</div>
       </td>
-      <td>${formatarDataHora(c.criadoEm)}</td>
-      <td style="white-space: nowrap;">
+      <td data-label="Data Abertura">${formatarDataHora(c.criadoEm)}</td>
+      <td data-label="Ações" style="white-space: nowrap;">
         <button type="button" class="btn-table-action" data-action="detalhes" data-id="${c.id}">
           🔍 Detalhes
         </button>
@@ -334,29 +392,29 @@ function renderizarTabelaConcluidos() {
   filtrados.forEach(c => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td style="font-family: monospace; font-weight: 700; color: var(--text-muted);">${c.protocolo || '-'}</td>
-      <td>
+      <td data-label="Protocolo" style="font-family: monospace; font-weight: 700; color: var(--text-muted);">${c.protocolo || '-'}</td>
+      <td data-label="Status">
         <span class="badge badge-${c.status}">
           ${c.status === 'concluido' ? 'Concluído' : 'Cancelado'}
         </span>
       </td>
-      <td>
+      <td data-label="Prioridade">
         <span class="badge badge-${c.prioridade}">
           ${c.prioridade.toUpperCase()}
         </span>
       </td>
-      <td>
+      <td data-label="Local & Resolução">
         <strong>${escapeHtml(c.salaNome || 'Local não informado')}</strong>
         <div style="font-size: 0.82rem; color: var(--text-muted); max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
           ${escapeHtml(c.descricao)}
         </div>
       </td>
-      <td>
+      <td data-label="Solicitante / Setor">
         <div>${escapeHtml(c.solicitanteNome)}</div>
         <div style="font-size: 0.78rem; color: var(--text-muted);">${escapeHtml(c.setor)}</div>
       </td>
-      <td>${formatarDataHora(c.concluidoEm || c.atualizadoEm)}</td>
-      <td style="white-space: nowrap;">
+      <td data-label="Data Fechamento">${formatarDataHora(c.concluidoEm || c.atualizadoEm)}</td>
+      <td data-label="Ações" style="white-space: nowrap;">
         <button type="button" class="btn-table-action" data-action="detalhes" data-id="${c.id}">
           🔍 Detalhes
         </button>

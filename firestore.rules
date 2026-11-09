@@ -16,7 +16,9 @@ service cloud.firestore {
                     && request.resource.data.descricao.size() > 0
                     && request.resource.data.status in ['pendente', 'em_andamento', 'concluido', 'cancelado'];
       
-      allow read, update, delete: if request.auth != null;
+      // Leitura pública em tempo real para o Painel da TV e formulário de acompanhamento
+      allow read: if true;
+      allow update, delete: if request.auth != null;
     }
   }
 }

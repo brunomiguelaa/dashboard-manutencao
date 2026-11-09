@@ -32,8 +32,11 @@
   <!-- Container Principal da Aplicação -->
   <div class="app-container" id="appContainer" style="display: none;">
     
+    <!-- Backdrop / Cortina Escura para Sidebar Mobile (Off-canvas Drawer) -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
     <!-- Sidebar Lateral -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="adminSidebar">
       <div class="sidebar-header">
         <div class="sidebar-logo-card">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -41,6 +44,7 @@
           </svg>
           <span>Setor de Manutenção</span>
         </div>
+        <button type="button" class="btn-close-sidebar" id="btnCloseSidebar" title="Fechar Menu" aria-label="Fechar Menu">✕</button>
       </div>
 
       <nav class="sidebar-nav">
@@ -93,16 +97,27 @@
     <!-- Área Principal -->
     <main class="main-wrapper">
       <header class="topbar">
-        <div class="topbar-title">
-          <h1 id="pageTitle">Chamados Ativos</h1>
+        <div class="topbar-left">
+          <!-- Botão de Menu Hamburger (Visível apenas no mobile) -->
+          <button type="button" class="btn-hamburger" id="btnToggleSidebar" aria-label="Abrir Menu de Navegação" title="Abrir Menu">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="topbar-title">
+            <h1 id="pageTitle">Chamados Ativos</h1>
+          </div>
         </div>
+
         <div class="topbar-actions">
           <a href="../tv/index.html" class="btn-tv-mode" target="_blank" title="Abrir painel da TV em tempo real">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
               <polyline points="17 2 12 7 7 2"></polyline>
             </svg>
-            <span>Modo TV</span>
+            <span class="btn-text">Modo TV</span>
           </a>
 
           <button type="button" class="btn-action-qr" id="btnTopbarQr">
@@ -112,7 +127,7 @@
               <rect x="14" y="14" width="7" height="7"></rect>
               <rect x="3" y="14" width="7" height="7"></rect>
             </svg>
-            <span>Gerar QR Code</span>
+            <span class="btn-text">Gerar QR Code</span>
           </button>
         </div>
       </header>
